@@ -1,12 +1,16 @@
 <!doctype html>
 <html>
   <head>
-    <title>Socket.IO chat</title>
+    <title>Broadcast System</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Serif; }
       form { background: #000; padding: 3px; position:fixed; bottom: 0px; width: 100%; }
+<<<<<<< HEAD
       form input { border: 0; padding: 12px; width: 80%; margin-right: .5%; }
+=======
+      form input { border-style: solid; padding: 12px; width: 80%; margin-right: .5%; }
+>>>>>>> 93330273f9c57e8cf6d24c3694dfd0ec6a7f4d62
       form button { width: 9%; background: rgb(140, 200, 255); border: none; padding: 10px; }
       #messages { list-style-type: none; margin: 0; padding: 0; }
       #messages li { padding: 5px 10px; }
@@ -20,6 +24,7 @@
         var $onlineuserslist = $('.onlineuserslist');
         var username = prompt("Please type in your username");
         var team = '';
+<<<<<<< HEAD
         if (confirm('Are you in Team Fire or Ice?')) {
             team = 'Fire';
         } else {
@@ -28,15 +33,29 @@
         var socket = io();
         socket.emit('user connects', username, team);
         // add the user to the list and create an event handler before the user leaves
+=======
+        var checker = 0;
+        if (confirm('Subscribe to Front Office or Risk Office? ok:Front cancel:Risk')) {
+            team = 'Front';
+        } else {
+            team = 'Risk';
+        }
+        var socket = io();
+        socket.emit('user connects', username, team);
+>>>>>>> 93330273f9c57e8cf6d24c3694dfd0ec6a7f4d62
         $onlineuserslist.append('<li class="' + username + '">' + username + '</li>');
         $(window).bind('beforeunload', function(){
             socket.emit('user disconnects', username);
         });
+<<<<<<< HEAD
 
+=======
+>>>>>>> 93330273f9c57e8cf6d24c3694dfd0ec6a7f4d62
         socket.on('user disconnects', function(user){
             $('#messages').append('<li><strong>' + user + 'has disconnected</strong></li>');
             $(this).remove();
         });
+<<<<<<< HEAD
 
         // send messages to server
         $('form').submit(function(){
@@ -56,6 +75,38 @@
         });
 
         // when the user types, send an event
+=======
+        // send the message to the server
+        $('form').submit(function(){
+            if ($('#m').val() !== "") {
+                socket.emit('chat message', $('#m').val(), username, team, checker);
+                $('#m').val('');
+                return false;
+            }
+            if ($('#t').val() !== ""){
+                checker = 1;
+                socket.emit('chat message', $('#t').val(), username, team, checker);
+                checker = 0;
+                $('#t').val('');
+                return false;
+            }
+        });
+        // Append the message
+        socket.on('chat message', function(msg, user, team, checker){
+            if (checker === 0) {
+                $('#messages').append('<li><strong> <font color ="orange">Team ' + team + ' </font> <font color ="blue">' + user + ': </font> </strong>' + msg + '</li>');
+            }
+            else {
+                $('#messages').append('<li><strong> <font color ="orange">Message to ' + team + ' Office, from </font> <font color ="blue">' + user + ': </font> </strong>' + msg + '</li>');
+            }
+            
+        });
+        // User has connected 
+        socket.on('user connects', function(msg){
+            $('#messages').append('<li>' + msg + '</li>');
+        });
+        // Typing event
+>>>>>>> 93330273f9c57e8cf6d24c3694dfd0ec6a7f4d62
         var typingTimer;
         var doneTypingInterval = 200;
         $('#m').keyup(function(){
@@ -64,30 +115,51 @@
                 socket.emit('user stopped typing', username);
             }, doneTypingInterval);
         });
+<<<<<<< HEAD
 
+=======
+>>>>>>> 93330273f9c57e8cf6d24c3694dfd0ec6a7f4d62
         $('#m').keydown(function(){
             clearTimeout(typingTimer);
             socket.emit('user is typing', username);
         });
+<<<<<<< HEAD
 
         // if one of the users is typing, display it in the chat window
+=======
+        // Translate the typing event to the window
+>>>>>>> 93330273f9c57e8cf6d24c3694dfd0ec6a7f4d62
         socket.on('user is typing', function(user){
             if($('.' + user).length == 0)
             {
                 $('#messages').append('<li class="' + user + '">' + user + ' is typing...</li>');
             }
         });
+<<<<<<< HEAD
 
         // if the user stopped typing, remove the message from the chat window
+=======
+        // When the user stops typing, remove the typing event
+>>>>>>> 93330273f9c57e8cf6d24c3694dfd0ec6a7f4d62
         socket.on('user stopped typing', function(user){
             $('#messages .' + user).remove();
         });
     })
     </script>
   <body>
-    <ul id="messages"></ul>
+    <ul id="messages"></ul> 
     <form action="">
+<<<<<<< HEAD
       <input autocomplete="off" /><button>Send</button>
+=======
+      <input id="m" autocomplete="off" /><button>Send to all</button>
+      <input id="t" autocomplete="off" /><select>
+  <option value="A">Front Office</option>
+  <option value="B">Risk Office</option>  
+  <option value="C">Operations Office</option> 
+  <option value="D">Finance Office</option> 
+</select><button>Send to Team</button>
+>>>>>>> 93330273f9c57e8cf6d24c3694dfd0ec6a7f4d62
     </form>
   </body>
 </html>
