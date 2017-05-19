@@ -5,20 +5,13 @@ var teamAUsers = {};
 var teamBUsers = {};
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/chat_index.html');
 });
 
 io.on('connection', function(socket){
 
 	socket.on('user connects', function(user, team){
 		io.emit('user connects', '<strong>' + user + ' from Team ' + team + ' has connected </strong>');
-		if (team == "A") {
-			teamAUsers[user] = socket.id;
-			socket.join('team A');
-		} else {
-			teamBUsers[user] = socket.id;
-			socket.join('team B');
-		}
 	});
 	socket.on('user disconnects', function(user){
 		io.emit('user disconnects', user);
@@ -37,6 +30,6 @@ io.on('connection', function(socket){
 	});
 });
 
-http.listen(3000, function(){
-	console.log('listening on *:3000');
+http.listen(8080, function(){
+	console.log('listening on *:8080');
 });

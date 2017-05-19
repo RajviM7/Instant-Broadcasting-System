@@ -21,10 +21,10 @@
         var username = prompt("Please type in your username");
         var team = '';
         var checker = 0;
-        if (confirm('Subscribe to Team A or Team B? ok:A cancel:B')) {
-            team = 'A';
+        if (confirm('Subscribe to Front Office or Risk Office? ok:Front cancel:Risk')) {
+            team = 'Front';
         } else {
-            team = 'B';
+            team = 'Risk';
         }
         var socket = io();
         socket.emit('user connects', username, team);
@@ -32,12 +32,10 @@
         $(window).bind('beforeunload', function(){
             socket.emit('user disconnects', username);
         });
-
         socket.on('user disconnects', function(user){
             $('#messages').append('<li><strong>' + user + 'has disconnected</strong></li>');
             $(this).remove();
         });
-
         // send the message to the server
         $('form').submit(function(){
             if ($('#m').val() !== "") {
@@ -52,7 +50,6 @@
                 $('#t').val('');
                 return false;
             }
-
         });
         // Append the message
         socket.on('chat message', function(msg, user, team, checker){
@@ -60,16 +57,14 @@
                 $('#messages').append('<li><strong> <font color ="orange">Team ' + team + ' </font> <font color ="blue">' + user + ': </font> </strong>' + msg + '</li>');
             }
             else {
-                $('#messages').append('<li><strong> <font color ="orange">Message to Team ' + team + ', from </font> <font color ="blue">' + user + ': </font> </strong>' + msg + '</li>');
+                $('#messages').append('<li><strong> <font color ="orange">Message to ' + team + ' Office, from </font> <font color ="blue">' + user + ': </font> </strong>' + msg + '</li>');
             }
             
         });
-
         // User has connected 
         socket.on('user connects', function(msg){
             $('#messages').append('<li>' + msg + '</li>');
         });
-
         // Typing event
         var typingTimer;
         var doneTypingInterval = 200;
@@ -79,12 +74,10 @@
                 socket.emit('user stopped typing', username);
             }, doneTypingInterval);
         });
-
         $('#m').keydown(function(){
             clearTimeout(typingTimer);
             socket.emit('user is typing', username);
         });
-
         // Translate the typing event to the window
         socket.on('user is typing', function(user){
             if($('.' + user).length == 0)
@@ -92,7 +85,6 @@
                 $('#messages').append('<li class="' + user + '">' + user + ' is typing...</li>');
             }
         });
-
         // When the user stops typing, remove the typing event
         socket.on('user stopped typing', function(user){
             $('#messages .' + user).remove();
@@ -103,7 +95,12 @@
     <ul id="messages"></ul> 
     <form action="">
       <input id="m" autocomplete="off" /><button>Send to all</button>
-      <input id="t" autocomplete="off" /><button>Send to Team</button>
+      <input id="t" autocomplete="off" /><select>
+  <option value="A">Front Office</option>
+  <option value="B">Risk Office</option>  
+  <option value="C">Operations Office</option> 
+  <option value="D">Finance Office</option> 
+</select><button>Send to Team</button>
     </form>
   </body>
 </html>
