@@ -4,10 +4,10 @@
     <title>Socket.IO chat</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      body { font: 13px Serif; }
+      form { background: #000; padding: 3px; position:fixed; bottom: 0px; width: 100%; }
+      form input { border: 0; padding: 12px; width: 80%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(140, 200, 255); border: none; padding: 10px; }
       #messages { list-style-type: none; margin: 0; padding: 0; }
       #messages li { padding: 5px 10px; }
       #messages li:nth-child(odd) { background: #eee; }
@@ -16,22 +16,78 @@
   <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
-  $(function () {
-    var socket = io();
-    $('form').submit(function(){
-      socket.emit('chat message', $('#m').val());
-      $('#m').val('');
-      return false;
-    });
-    socket.on('chat message', function(msg){
-      $('#messages').append($('<li>').text(msg));
-    });
-  });
-</script>
+    $(function () {
+        var $onlineuserslist = $('.onlineuserslist');
+        var username = prompt("Please type in your username");
+        var team = '';
+        if (confirm('Are you in Team Fire or Ice?')) {
+            team = 'Fire';
+        } else {
+            team = 'Ice';
+        }
+        var socket = io();
+        socket.emit('user connects', username, team);
+        // add the user to the list and create an event handler before the user leaves
+        $onlineuserslist.append('<li class="' + username + '">' + username + '</li>');
+        $(window).bind('beforeunload', function(){
+            socket.emit('user disconnects', username);
+        });
+
+        socket.on('user disconnects', function(user){
+            $('#messages').append('<li><strong>' + user + 'has disconnected</strong></li>');
+            $(this).remove();
+        });
+
+        // send messages to server
+        $('form').submit(function(){
+            socket.emit('chat message', $('#m').val(), username);
+            $('#m').val('');
+            return false;
+        });
+
+        // once a message has been received, append it to the chat window
+        socket.on('chat message', function(msg, user){
+            $('#messages').append('<li><strong><font color="blue">' + user + ': </font> </strong>' + msg + '</li>');
+        });
+
+        // display the username of the user who connected
+        socket.on('user connects', function(msg){
+            $('#messages').append('<li>' + msg + '</li>');
+        });
+
+        // when the user types, send an event
+        var typingTimer;
+        var doneTypingInterval = 200;
+        $('#m').keyup(function(){
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(function(){
+                socket.emit('user stopped typing', username);
+            }, doneTypingInterval);
+        });
+
+        $('#m').keydown(function(){
+            clearTimeout(typingTimer);
+            socket.emit('user is typing', username);
+        });
+
+        // if one of the users is typing, display it in the chat window
+        socket.on('user is typing', function(user){
+            if($('.' + user).length == 0)
+            {
+                $('#messages').append('<li class="' + user + '">' + user + ' is typing...</li>');
+            }
+        });
+
+        // if the user stopped typing, remove the message from the chat window
+        socket.on('user stopped typing', function(user){
+            $('#messages .' + user).remove();
+        });
+    })
+    </script>
   <body>
     <ul id="messages"></ul>
     <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
+      <input autocomplete="off" /><button>Send</button>
     </form>
   </body>
 </html>
