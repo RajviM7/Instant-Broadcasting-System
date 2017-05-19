@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Socket.IO chat</title>
+    <title>Broadcast System</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Serif; }
@@ -38,7 +38,7 @@
             $(this).remove();
         });
 
-        // send messages to server
+        // send the message to the server
         $('form').submit(function(){
             if ($('#m').val() !== "") {
                 socket.emit('chat message', $('#m').val(), username, team, checker);
@@ -54,7 +54,7 @@
             }
 
         });
-        // once a message has been received, append it to the chat window
+        // Append the message
         socket.on('chat message', function(msg, user, team, checker){
             if (checker === 0) {
                 $('#messages').append('<li><strong> <font color ="orange">Team ' + team + ' </font> <font color ="blue">' + user + ': </font> </strong>' + msg + '</li>');
@@ -65,12 +65,12 @@
             
         });
 
-        // display the username of the user who connected
+        // User has connected 
         socket.on('user connects', function(msg){
             $('#messages').append('<li>' + msg + '</li>');
         });
 
-        // when the user types, send an event
+        // Typing event
         var typingTimer;
         var doneTypingInterval = 200;
         $('#m').keyup(function(){
@@ -85,7 +85,7 @@
             socket.emit('user is typing', username);
         });
 
-        // if one of the users is typing, display it in the chat window
+        // Translate the typing event to the window
         socket.on('user is typing', function(user){
             if($('.' + user).length == 0)
             {
@@ -93,7 +93,7 @@
             }
         });
 
-        // if the user stopped typing, remove the message from the chat window
+        // When the user stops typing, remove the typing event
         socket.on('user stopped typing', function(user){
             $('#messages .' + user).remove();
         });
