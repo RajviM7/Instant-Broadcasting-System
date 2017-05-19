@@ -1,0 +1,11 @@
+We decided to create a broadcasting system to allow a user to broadcast a message across mutliple distribution groups.
+Any member who is subscribed to one of the distribution groups will receive the message.
+The messages sent can be designated as confidential, public, private, or secret. 
+The graphical user interface was designed to help the user experience.
+It is compatible on both phone and pc formats.
+
+This broadcasting system provides and intuitive and efficient way to safely transmit messages across multiple parties.
+Our team name is SUB because it is analagous to a submarine, which can go to deeper sea levels, demonstrating the depth of the subscriber's ranking. 
+For instance, the team leader is at a deeper level than the team members, who are one level above the team leader.
+
+
